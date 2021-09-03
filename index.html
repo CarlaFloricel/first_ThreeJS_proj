@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8>
+
+    <title>Assignment 3 -- three.js Robot</title>
+
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <!-- CSS Source -->
+    <link rel="stylesheet" href="./src/css/main.css" />
+
+    <!-- JS Libraries -->
+    <script   src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="lib/js/three.min.js"></script>
+    <script src="lib/js/d3.js"></script>
+    <script src="lib/dat.gui.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.6/d3.min.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="lib/js/d3.js"></script>
+
+    <!-- JS Source -->
+    <script src="./src/js/scene.js"></script>
+    <script src="./src/js/particleSystem.js"></script>
+    <script src="./src/js/main.js"></script>
+
+</head>
+
+<body onload="App.start();">
+<div class="first d-flex">
+    <div class="container-fluid d-flex">
+        <div class="row d-flex">
+            <div class="particleDiv col-md-6 d-flex">
+                <div id="scene"></div>
+                <div class="col-md-6 d-flex">
+                 <h3 >Resources:</h3>  
+				<ul> 
+				<li><h4><a href="https://codepen.io/mblode/pen/rfDek" target="_blank">Codepen</a></h4></li>
+				<li><h4><a href="https://www.linkedin.com/learning/learning-3d-graphics-on-the-web-with-three-js/scene-essentials?u=43607124" target="_blank">Lynda Three.js Tutorial</a></h4></li>
+				<li><h4> <a href="http://colorbrewer2.org/#type=sequential&scheme=BuGn&n=3" target="_blank">ColorBrewer</a></h4></li></ul></div>
+                 <script>
+				    var w = 170,
+				        h = 220;
+
+				    var svg = d3.select("#scene").append("svg")
+				        .attr("width", w)
+				        .attr("height", h)
+				        .attr("z-index",1000)
+				        .style("position", 'fixed');
+
+				   var colorLegendContainerSettings = {
+				    x: 10,
+				    y: 10,
+				    width: 140,
+				    height: 200,
+				    roundX: 10,
+				    roundY: 10
+				}
+
+				var concentrationColor=['#f0f0f0', '#d9d9d9', '#bdbdbd',  '#969696', '#737373','#525252', '#252525', '#000000'];
+				var concentrationColor2=['#f7fcfd', '#bfd3e6', '#9ebcda',  '#8c96c6', '#8c6bb1','#88419d', '#810f7c', '#4d004b'];
+
+
+				var colorLegendContainer = svg.append('rect')
+				  .attr("x", colorLegendContainerSettings.x)
+				  .attr("y", colorLegendContainerSettings.y)
+				  .attr("width", colorLegendContainerSettings.width)
+				  .attr("height", colorLegendContainerSettings.height)
+				  .attr("id", "colorLegendContainer")
+				  .attr("fill",'#ffffff')
+
+
+				var scaleColor= d3.scale.quantize()
+				                    .domain([0, 1700])
+				                    .range([0, 0.2, 0.4, 0.6, 0.8, 1])
+
+				var legendBoxSettings={
+				  width:30,
+				  height:20,
+				  x:colorLegendContainerSettings.x + 10
+				}
+
+				var colorLegendData=[0.0001, 0.001, 0.01, 0.1, 0, 1, 10, 20 ];
+
+				var colorLegend = svg.selectAll("g.colorLegend")
+				                    .data(colorLegendData)
+				                    .enter().append("g")
+				                    .attr("class", "colorLegend");
+
+				var colorLegendLabels= [
+				    "~ " + colorLegendData[0],
+				    "~ " + colorLegendData[1],
+				    "~ " + colorLegendData[2],
+				    "~ " + colorLegendData[3],
+				    "~ " + colorLegendData[4],
+				    "~ " + colorLegendData[5],
+				    "< " + colorLegendData[6],
+				    "< " + colorLegendData[7],
+				];
+
+				colorLegend.append("rect")
+				        .attr("x", legendBoxSettings.x+35)
+				          .attr("y", function(d,i){
+				           return colorLegendContainerSettings.y+legendBoxSettings.height *i + 30; 
+				          })
+				          .attr("width", legendBoxSettings.width)
+				          .attr("height", legendBoxSettings.height)
+				          .attr("stroke","#c2c5cc")
+				          .style("fill", function(d,i){
+				              for (var j = 0; j<concentrationColor2.length; j++){
+				                if (i==j)
+				                  return concentrationColor2[j];
+				              
+				              }
+
+				          })
+				          .attr("opacity","1");
+
+				colorLegend.append("rect")
+				        .attr("x", legendBoxSettings.x)
+				          .attr("y", function(d,i){
+				           return colorLegendContainerSettings.y+legendBoxSettings.height *i + 30; 
+				          })
+				          .attr("width", legendBoxSettings.width)
+				          .attr("height", legendBoxSettings.height)
+				          .attr("stroke","#c2c5cc")
+				          .style("fill", function(d,i){
+				              for (var j = 0; j<concentrationColor.length; j++){
+				                if (i==j)
+				                  return concentrationColor[j];
+				              
+				              }
+
+				          })
+				          .attr("opacity","1");          
+
+				colorLegend.append("text")
+				          .attr("x", colorLegendContainerSettings.x +22)
+				          .attr("y", colorLegendContainerSettings.y +20)
+				          .style("font-size",14)
+				          .style("font-weight","bold")
+				          .style("opacity", "0.3")
+				          .text("Concentration") 
+
+				colorLegend.append("text")
+				            .attr("x", colorLegendContainerSettings.x +85)
+				            .attr("y", function(d,i){
+				              return colorLegendContainerSettings.y+legendBoxSettings.height*i + 45;
+				            })
+				            .attr("font-size", 12)
+				            .text(function(d,i){
+				              return colorLegendLabels[i];
+				            })
+				           
+				</script>
+
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>
